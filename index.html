@@ -389,7 +389,7 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
     <div class="confirm-card">
       <div class="seal"><svg viewBox="0 0 32 32" width="52" height="52" aria-hidden="true"><circle cx="16" cy="18" r="13" fill="#E8641B"/><ellipse cx="11.5" cy="13.5" rx="4.5" ry="3.2" fill="#F49A5B" opacity=".7"/><path d="M17 7 C19.5 2.5 26 3.2 26 3.2 s-.6 6-6.5 6" fill="#3E6B45"/><rect x="15.2" y="3.6" width="1.9" height="4.6" rx=".95" fill="#6B4A2F"/></svg></div>
       <h2>It is done.</h2>
-      <p>Order <span style="color:var(--gold)">Nº 000·∞</span> confirmed by all relevant parties.</p>
+      <p>Order <span style="color:var(--gold)" id="orderNum">Nº 000000</span> confirmed by all relevant parties.</p>
       <div class="order-lines" id="orderLines"></div>
       <p>Paid: nothing. Owed: nothing.<br>Delivery: when you least expect it.</p>
       <button class="back" id="backBtn">Return to the store</button>
@@ -560,6 +560,8 @@ function showConfirm(){
     const p=PRODUCTS.find(x=>x.id===id);
     return `<div><span>${p.name}${qty>1? ' × '+qty:''}</span><span>now yours</span></div>`;
   }).join('') + `<div><span>Delivered to</span><span>your life</span></div>`;
+  const orderNum = String(Math.floor(100000 + Math.random()*900000));
+  $('orderNum').textContent = 'Nº ' + orderNum;
   $('ritualInner').style.display='none';
   $('confirm').classList.add('show');
 }
