@@ -81,6 +81,22 @@ header{
 }
 .hero .shop-cta:hover{background:var(--dusk);transform:translateY(-2px)}
 
+.live-ticker{
+  display:inline-flex;align-items:center;gap:.55rem;
+  margin-top:1.5rem;font-size:.82rem;color:rgba(34,48,31,.65);
+}
+.live-ticker .pulse{
+  width:.5rem;height:.5rem;border-radius:50%;background:var(--dusk);flex-shrink:0;
+  animation:pulse 2.2s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(62,107,69,.45)}
+  70%{box-shadow:0 0 0 8px rgba(62,107,69,0)}
+  100%{box-shadow:0 0 0 0 rgba(62,107,69,0)}
+}
+.live-ticker #liveText{transition:opacity .35s;display:inline-block}
+.live-ticker.fade #liveText{opacity:0}
+
 /* ---------- grid ---------- */
 .shop{max-width:72rem;margin:0 auto;padding:0 clamp(1rem,4vw,3rem) 5rem}
 .shop-head{
@@ -102,8 +118,9 @@ header{
 .swatch{
   border-radius:10px;height:8.5rem;display:flex;align-items:center;justify-content:center;
   font-family:'Instrument Serif',serif;font-style:italic;font-size:4.2rem;color:var(--ink);
-  margin-bottom:.4rem;user-select:none;
+  margin-bottom:.4rem;user-select:none;overflow:hidden;
 }
+.swatch img{width:100%;height:100%;object-fit:cover;display:block}
 .card h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.35rem}
 .stars{color:var(--gold);font-size:.85rem;letter-spacing:.1em}
 .stars span{color:rgba(34,48,31,.5);letter-spacing:0;margin-left:.4rem;font-size:.78rem}
@@ -161,9 +178,10 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
 }
 .cart-item .thumb{
   width:3rem;height:3rem;border-radius:8px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
   font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;
 }
+.cart-item .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .cart-item .info{flex:1}
 .cart-item .info strong{font-weight:500;font-size:.95rem;display:block}
 .cart-item .info small{color:var(--dusk);font-size:.75rem}
@@ -289,6 +307,10 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
   <h1>Everything you need.<br><em>Nothing you can hold.</em></h1>
   <p>Luck, hope, patience, love — in stock and ready to enter your life. No payment. No shipping address. Just decide what you want, and mean it.</p>
   <a href="#shop" class="shop-cta">Browse the shelves</a>
+  <div class="live-ticker" id="liveTicker" aria-hidden="true">
+    <span class="pulse"></span>
+    <span id="liveText">—</span>
+  </div>
 </section>
 
 <section class="shop" id="shop">
@@ -375,15 +397,15 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
 
 <script>
 const PRODUCTS = [
-  {id:'luck', name:'Luck', tint:'#F6E7C6', rating:'4.9', reviews:'2,847', desc:'General purpose. Works on parking spots, coin flips, and second chances.', note:'Bestseller'},
-  {id:'hope', name:'Hope', tint:'#DCEDDA', rating:'5.0', reviews:'9,120', desc:'Small but self-replenishing. Pairs well with mornings.', note:'Restocked daily'},
-  {id:'love', name:'Love', tint:'#F9DFD3', rating:'4.8', reviews:'14,203', desc:'Given and received in the same transaction. Handle warmly.', note:'Fragile · precious'},
-  {id:'patience', name:'Patience', tint:'#E9EBD9', rating:'4.6', reviews:'1,532', desc:'Ships slowly, on purpose. You\u2019ll understand when it arrives.', note:'Slow delivery'},
-  {id:'courage', name:'Courage', tint:'#F8DCBE', rating:'4.9', reviews:'3,481', desc:'Feels heavier in the cart than it does in your hands.', note:'One size fits all'},
-  {id:'peace', name:'Peace of Mind', tint:'#DCEBE4', rating:'4.7', reviews:'6,914', desc:'Quiet, lightweight, easy to lose and easy to reorder.', note:'Reorder anytime'},
-  {id:'timing', name:'Good Timing', tint:'#F3E4C4', rating:'4.8', reviews:'987', desc:'Arrives precisely when it should, which is rarely when you\u2019d like.', note:'Punctual, cosmically'},
-  {id:'fresh', name:'A Fresh Start', tint:'#E2EFD6', rating:'5.0', reviews:'4,096', desc:'Compatible with any day of the week, not just January 1st.', note:'No expiry'},
-  {id:'serendipity', name:'Serendipity', tint:'#FBE3CB', rating:'4.9', reviews:'2,222', desc:'Cannot be ordered for a specific purpose. That\u2019s the mechanism.', note:'Surprise inside'}
+  {id:'luck', name:'Luck', tint:'#F6E7C6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174924_030eed5b-832b-411a-92fe-37ac69335970.png', rating:'4.9', reviews:'2,847', desc:'General purpose. Works on parking spots, coin flips, and second chances.', note:'Bestseller'},
+  {id:'hope', name:'Hope', tint:'#DCEDDA', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174926_5c189d0f-1359-4dcb-abff-6f3736ae7ada.png', rating:'5.0', reviews:'9,120', desc:'Small but self-replenishing. Pairs well with mornings.', note:'Restocked daily'},
+  {id:'love', name:'Love', tint:'#F9DFD3', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174928_621dedcc-9a45-4bb9-aac0-83cc44aaf7d5.png', rating:'4.8', reviews:'14,203', desc:'Given and received in the same transaction. Handle warmly.', note:'Fragile \u00b7 precious'},
+  {id:'patience', name:'Patience', tint:'#E9EBD9', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_175052_b2ebd497-ea64-4da6-b63e-96a611073051.png', rating:'4.6', reviews:'1,532', desc:'Ships slowly, on purpose. You\u2019ll understand when it arrives.', note:'Slow delivery'},
+  {id:'courage', name:'Courage', tint:'#F8DCBE', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174930_4046d313-e908-4419-8bd1-b9d38e1835f6.png', rating:'4.9', reviews:'3,481', desc:'Feels heavier in the cart than it does in your hands.', note:'One size fits all'},
+  {id:'peace', name:'Peace of Mind', tint:'#DCEBE4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174932_4eea45d2-7101-407c-9319-d7775678a312.png', rating:'4.7', reviews:'6,914', desc:'Quiet, lightweight, easy to lose and easy to reorder.', note:'Reorder anytime'},
+  {id:'timing', name:'Good Timing', tint:'#F3E4C4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_175101_562cc67e-3f46-45a1-b817-400f5a2d31c6.png', rating:'4.8', reviews:'987', desc:'Arrives precisely when it should, which is rarely when you\u2019d like.', note:'Punctual, cosmically'},
+  {id:'fresh', name:'A Fresh Start', tint:'#E2EFD6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174936_4af9de2a-087a-4038-bb30-a0f8b59ac9c4.png', rating:'5.0', reviews:'4,096', desc:'Compatible with any day of the week, not just January 1st.', note:'No expiry'},
+  {id:'serendipity', name:'Serendipity', tint:'#FBE3CB', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174953_f6d5aad3-8143-45c7-b0fb-cb95ac4fe68b.png', rating:'4.9', reviews:'2,222', desc:'Cannot be ordered for a specific purpose. That\u2019s the mechanism.', note:'Surprise inside'}
 ];
 
 const RITUAL_STEPS = [
@@ -406,7 +428,7 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ----- render grid ----- */
 $('grid').innerHTML = PRODUCTS.map(p => `
   <div class="card">
-    <div class="swatch" style="background:${p.tint}">${p.name[0]}</div>
+    <div class="swatch" style="background:${p.tint}"><img src="${p.img}" alt="${p.name}" loading="lazy" decoding="async"></div>
     <h3>${p.name}</h3>
     <div class="stars">★★★★★ <span>${p.rating} (${p.reviews})</span></div>
     <p class="desc">${p.desc}</p>
@@ -434,7 +456,7 @@ function renderCart(){
   $('cartItems').innerHTML = items.map(([id,qty])=>{
     const p = PRODUCTS.find(x=>x.id===id);
     return `<div class="cart-item">
-      <div class="thumb" style="background:${p.tint}">${p.name[0]}</div>
+      <div class="thumb" style="background:${p.tint}"><img src="${p.img}" alt="" loading="lazy"></div>
       <div class="info"><strong>${p.name}</strong><small>$0.00 · always</small></div>
       <div class="qty">
         <button data-id="${id}" data-d="-1" aria-label="Less ${p.name}">−</button>
@@ -474,7 +496,7 @@ function setMode(m){
     $('acceptItems').innerHTML = Object.entries(cart).map(([id,qty])=>{
       const p = PRODUCTS.find(x=>x.id===id);
       return `<div class="cart-item">
-        <div class="thumb" style="background:${p.tint}">${p.name[0]}</div>
+        <div class="thumb" style="background:${p.tint}"><img src="${p.img}" alt="" loading="lazy"></div>
         <div class="info"><strong>${p.name}</strong><small>Qty ${qty} · incoming</small></div>
       </div>`;
     }).join('');
@@ -549,6 +571,35 @@ $('backBtn').addEventListener('click',()=>{
 });
 
 renderCart();
+
+/* ----- live ticker (simulated — a plausible, drifting illusion of activity, not a real count) ----- */
+const liveCounts = {};
+PRODUCTS.forEach(p=>{
+  let seed = 0;
+  for(const c of p.id) seed = (seed*31 + c.charCodeAt(0)) >>> 0;
+  liveCounts[p.id] = 90 + (seed % 3200);
+});
+let tickerIdx = 0;
+function fmtCount(n){ return n.toLocaleString('en-US'); }
+function driftLiveCounts(){
+  PRODUCTS.forEach(p=>{
+    const delta = Math.floor(Math.random()*7) - 3; // -3..+3
+    liveCounts[p.id] = Math.max(9, liveCounts[p.id] + delta);
+  });
+}
+function tickLiveTicker(){
+  driftLiveCounts();
+  const p = PRODUCTS[tickerIdx % PRODUCTS.length];
+  tickerIdx++;
+  const el = $('liveTicker');
+  el.classList.add('fade');
+  setTimeout(()=>{
+    $('liveText').textContent = `${fmtCount(liveCounts[p.id])} people have ${p.name} in their cart right now`;
+    el.classList.remove('fade');
+  }, reduced? 0 : 350);
+}
+tickLiveTicker();
+setInterval(tickLiveTicker, reduced? 5000 : 3400);
 </script>
 </body>
 </html>
