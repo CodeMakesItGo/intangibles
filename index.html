@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>intangibles — a store for things you can't hold</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="18" r="13" fill="%23E8641B"/><ellipse cx="11.5" cy="13.5" rx="4.5" ry="3.2" fill="%23F49A5B" opacity=".7"/><path d="M17 7 C19.5 2.5 26 3.2 26 3.2 s-.6 6-6.5 6" fill="%233E6B45"/><rect x="15.2" y="3.6" width="1.9" height="4.6" rx=".95" fill="%236B4A2F"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FCF8F2;
+  --ink:#22301F;
+  --dusk:#3E6B45;   /* leaf green */
+  --gold:#E8641B;   /* tangerine */
+  --line:rgba(34,48,31,.14);
+  --night:#111A12;  /* orchard at night */
+  --star:#FFEFDC;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-weight:300;
+  line-height:1.6;
+}
+::selection{background:var(--dusk);color:var(--paper)}
+
+/* ---------- announcement + header ---------- */
+.announce{
+  background:var(--ink);color:var(--paper);
+  text-align:center;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.55rem 1rem;
+}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem clamp(1rem,4vw,3rem);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:var(--paper);z-index:40;
+}
+.wordmark{font-family:'Instrument Serif',serif;font-size:1.55rem;letter-spacing:.01em;display:flex;align-items:center;gap:.55rem}
+.wordmark em{color:var(--gold);font-style:normal}
+.mark-fruit{flex-shrink:0;transform:translateY(1px)}
+.cart-btn{
+  background:none;border:1px solid var(--ink);border-radius:999px;
+  font-family:'Outfit',sans-serif;font-weight:500;font-size:.85rem;
+  padding:.5rem 1.1rem;cursor:pointer;color:var(--ink);
+  display:flex;align-items:center;gap:.5rem;
+  transition:background .2s,color .2s;
+}
+.cart-btn:hover,.cart-btn:focus-visible{background:var(--ink);color:var(--paper)}
+.cart-count{
+  background:var(--gold);color:#fff;border-radius:999px;
+  min-width:1.35rem;height:1.35rem;display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:600;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  text-align:center;
+  padding:clamp(3.5rem,9vw,6.5rem) 1.25rem clamp(2.5rem,6vw,4rem);
+  max-width:52rem;margin:0 auto;
+}
+.hero .eyebrow{
+  font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dusk);
+  margin-bottom:1.2rem;
+}
+.hero h1{
+  font-family:'Instrument Serif',serif;font-weight:400;
+  font-size:clamp(2.4rem,6.5vw,4.3rem);line-height:1.08;
+}
+.hero h1 em{font-style:italic;color:var(--dusk)}
+.hero p{margin:1.4rem auto 2rem;max-width:34rem;color:rgba(34,48,31,.75)}
+.hero .shop-cta{
+  display:inline-block;background:var(--ink);color:var(--paper);text-decoration:none;
+  border-radius:999px;padding:.8rem 2rem;font-weight:500;font-size:.95rem;
+  transition:transform .2s,background .2s;
+}
+.hero .shop-cta:hover{background:var(--dusk);transform:translateY(-2px)}
+
+/* ---------- grid ---------- */
+.shop{max-width:72rem;margin:0 auto;padding:0 clamp(1rem,4vw,3rem) 5rem}
+.shop-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-top:1px solid var(--line);padding-top:1.2rem;margin-bottom:1.8rem;
+}
+.shop-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.6rem}
+.shop-head span{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dusk)}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));
+  gap:1.4rem;
+}
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:1.3rem;display:flex;flex-direction:column;gap:.55rem;
+  transition:transform .25s,box-shadow .25s;
+}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(34,48,31,.10)}
+.swatch{
+  border-radius:10px;height:8.5rem;display:flex;align-items:center;justify-content:center;
+  font-family:'Instrument Serif',serif;font-style:italic;font-size:4.2rem;color:var(--ink);
+  margin-bottom:.4rem;user-select:none;
+}
+.card h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.35rem}
+.stars{color:var(--gold);font-size:.85rem;letter-spacing:.1em}
+.stars span{color:rgba(34,48,31,.5);letter-spacing:0;margin-left:.4rem;font-size:.78rem}
+.card .desc{font-size:.87rem;color:rgba(34,48,31,.72);flex:1}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--dusk)}
+.price{font-weight:600;color:var(--ink);font-size:1rem}
+.add-btn{
+  margin-top:.4rem;background:none;border:1px solid var(--ink);border-radius:999px;
+  padding:.6rem;font-family:'Outfit',sans-serif;font-weight:500;font-size:.88rem;
+  cursor:pointer;color:var(--ink);transition:background .2s,color .2s;
+}
+.add-btn:hover,.add-btn:focus-visible{background:var(--ink);color:var(--paper)}
+.add-btn.added{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ---------- review strip ---------- */
+.reviews{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:#fff;padding:3rem clamp(1rem,4vw,3rem);margin-bottom:4rem;
+}
+.reviews .inner{max-width:72rem;margin:0 auto;display:grid;gap:1.6rem;
+  grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));}
+.review q{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.12rem;display:block;margin-bottom:.6rem;line-height:1.45}
+.review cite{font-style:normal;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dusk)}
+
+/* ---------- footer ---------- */
+footer{
+  text-align:center;padding:2.5rem 1rem 3rem;font-size:.8rem;color:rgba(34,48,31,.55);
+}
+footer .fine{max-width:30rem;margin:0 auto .6rem}
+
+/* ---------- cart drawer ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(17,26,18,.45);opacity:0;pointer-events:none;
+  transition:opacity .3s;z-index:60;
+}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:min(26rem,100%);
+  background:var(--paper);z-index:70;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,.28,1);
+  box-shadow:-10px 0 40px rgba(17,26,18,.18);
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 1.4rem;border-bottom:1px solid var(--line);
+}
+.drawer-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.4rem}
+.close-x{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink);line-height:1}
+.drawer-body{flex:1;overflow-y:auto;padding:1.2rem 1.4rem}
+.empty-cart{text-align:center;color:rgba(34,48,31,.6);padding:3rem 1rem}
+.empty-cart .big{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;color:var(--ink);margin-bottom:.4rem}
+.cart-item{
+  display:flex;align-items:center;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--line);
+}
+.cart-item .thumb{
+  width:3rem;height:3rem;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;
+}
+.cart-item .info{flex:1}
+.cart-item .info strong{font-weight:500;font-size:.95rem;display:block}
+.cart-item .info small{color:var(--dusk);font-size:.75rem}
+.qty{display:flex;align-items:center;gap:.5rem}
+.qty button{
+  width:1.6rem;height:1.6rem;border-radius:999px;border:1px solid var(--line);
+  background:#fff;cursor:pointer;font-size:.9rem;color:var(--ink);
+}
+.qty button:hover{border-color:var(--ink)}
+.drawer-foot{border-top:1px solid var(--line);padding:1.2rem 1.4rem}
+.subtotal{display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:.35rem}
+.subtotal strong{font-weight:600}
+.foot-note{font-size:.75rem;color:rgba(34,48,31,.55);margin-bottom:1rem}
+.checkout-btn{
+  width:100%;background:var(--ink);color:var(--paper);border:none;border-radius:999px;
+  padding:.9rem;font-family:'Outfit',sans-serif;font-weight:500;font-size:1rem;cursor:pointer;
+  transition:background .2s;
+}
+.checkout-btn:hover{background:var(--dusk)}
+.checkout-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- accept step ---------- */
+.accept-box{padding:1.2rem 1.4rem}
+.accept-box p{font-size:.9rem;margin-bottom:1rem;color:rgba(34,48,31,.8)}
+.accept-box label{
+  display:flex;gap:.6rem;align-items:flex-start;font-size:.85rem;margin-bottom:1.2rem;cursor:pointer;
+}
+.accept-box input[type=checkbox]{margin-top:.25rem;accent-color:var(--dusk);width:1rem;height:1rem}
+
+/* ---------- ritual ---------- */
+.ritual{
+  position:fixed;inset:0;background:var(--night);z-index:90;color:var(--star);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .6s;overflow:hidden;
+}
+.ritual.open{opacity:1;pointer-events:auto}
+.sky{position:absolute;inset:0}
+.sky i{
+  position:absolute;width:2px;height:2px;border-radius:50%;background:var(--star);
+  opacity:.7;animation:twinkle 3.2s ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}
+.ritual-inner{position:relative;text-align:center;max-width:34rem;padding:2rem;width:100%}
+.ritual-title{
+  font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+  font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:2.2rem;color:var(--star);
+}
+.steps{display:flex;flex-direction:column;gap:.85rem;text-align:left;max-width:24rem;margin:0 auto}
+.step{
+  display:flex;align-items:center;gap:.8rem;font-size:.98rem;
+  opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s;
+  color:rgba(255,239,220,.85);
+}
+.step.show{opacity:1;transform:none}
+.step .mark{
+  width:1.3rem;height:1.3rem;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(255,239,220,.4);display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;transition:background .3s,border-color .3s;
+}
+.step.done .mark{background:var(--gold);border-color:var(--gold);color:#fff}
+.step .spin{
+  width:.55rem;height:.55rem;border:1.5px solid rgba(255,239,220,.35);border-top-color:var(--star);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.step.done .spin{display:none}
+
+/* ---------- confirmation ---------- */
+.confirm{
+  opacity:0;transform:translateY(10px);transition:opacity .7s,transform .7s;
+  pointer-events:none;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:2rem;
+}
+.confirm.show{opacity:1;transform:none;pointer-events:auto}
+.confirm-card{max-width:26rem;text-align:center}
+.confirm-card .seal{
+  font-family:'Instrument Serif',serif;font-style:italic;font-size:3rem;color:var(--gold);line-height:1;
+  margin-bottom:1rem;
+}
+.confirm-card h2{
+  font-family:'Instrument Serif',serif;font-weight:400;font-size:2rem;margin-bottom:.8rem;color:var(--star);
+}
+.confirm-card p{color:rgba(255,239,220,.8);font-size:.95rem;margin-bottom:.5rem}
+.order-lines{
+  border-top:1px solid rgba(255,239,220,.2);border-bottom:1px solid rgba(255,239,220,.2);
+  margin:1.4rem 0;padding:1rem 0;font-size:.88rem;text-align:left;
+}
+.order-lines div{display:flex;justify-content:space-between;padding:.2rem 0;color:rgba(255,239,220,.85)}
+.order-lines div span:last-child{color:var(--gold)}
+.confirm-card .back{
+  margin-top:1.4rem;background:none;border:1px solid rgba(255,239,220,.5);color:var(--star);
+  border-radius:999px;padding:.75rem 1.8rem;font-family:'Outfit',sans-serif;font-weight:500;
+  font-size:.92rem;cursor:pointer;transition:background .2s,color .2s;
+}
+.confirm-card .back:hover{background:var(--star);color:var(--night)}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+@media (max-width:520px){
+  .grid{grid-template-columns:1fr 1fr;gap:.8rem}
+  .card{padding:.9rem}
+  .swatch{height:6rem;font-size:3rem}
+}
+</style>
+</head>
+<body>
+
+<div class="announce">Free shipping on all orders · Everything is free · Always has been</div>
+
+<header>
+  <div class="wordmark">
+    <svg class="mark-fruit" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="18" r="13" fill="#E8641B"/><ellipse cx="11.5" cy="13.5" rx="4.5" ry="3.2" fill="#F49A5B" opacity=".7"/><path d="M17 7 C19.5 2.5 26 3.2 26 3.2 s-.6 6-6.5 6" fill="#3E6B45"/><rect x="15.2" y="3.6" width="1.9" height="4.6" rx=".95" fill="#6B4A2F"/></svg>
+    <span>in<em>tang</em>ibles</span>
+  </div>
+  <button class="cart-btn" id="openCart" aria-label="Open cart">
+    Cart <span class="cart-count" id="cartCount">0</span>
+  </button>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Purveyors of fine intangibles · Est. before time</div>
+  <h1>Everything you need.<br><em>Nothing you can hold.</em></h1>
+  <p>Luck, hope, patience, love — in stock and ready to enter your life. No payment. No shipping address. Just decide what you want, and mean it.</p>
+  <a href="#shop" class="shop-cta">Browse the shelves</a>
+</section>
+
+<section class="shop" id="shop">
+  <div class="shop-head">
+    <h2>All goods</h2>
+    <span>∞ in stock</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section class="reviews">
+  <div class="inner">
+    <div class="review">
+      <q>Ordered Patience three weeks ago. Still waiting. Which, I've realized, is the point.</q>
+      <cite>— Verified recipient</cite>
+    </div>
+    <div class="review">
+      <q>Bought Courage on a Tuesday. Quit my job on a Thursday. Would order again.</q>
+      <cite>— Verified recipient</cite>
+    </div>
+    <div class="review">
+      <q>The Luck arrived unmarked and unannounced, exactly as described. Five stars.</q>
+      <cite>— Verified recipient</cite>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="fine">intangibles makes no promises, which is how it keeps all of them. Delivery times vary from immediately to eventually. Results depend almost entirely on you — that's the fine print and the whole idea. Nothing in this store is tangible. Except, technically, the tangerine.</p>
+  <p class="fine">intangibles is a small, meaningful project from <a href="https://neatofx.com" style="color:var(--gold);text-decoration:none;border-bottom:1px solid currentColor">NeatoFX</a> — where we build the tangible kind.</p>
+  <p>© The Universe. All rights shared.</p>
+</footer>
+
+<!-- cart -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping cart">
+  <div class="drawer-head">
+    <h2 id="drawerTitle">Your cart</h2>
+    <button class="close-x" id="closeCart" aria-label="Close cart">×</button>
+  </div>
+
+  <div class="drawer-body" id="cartView">
+    <div id="cartItems"></div>
+    <div class="empty-cart" id="emptyCart">
+      <div class="big">Nothing here yet.</div>
+      <p>Which is fitting, but fixable.</p>
+    </div>
+  </div>
+
+  <div class="drawer-body accept-box" id="acceptView" style="display:none">
+    <p>You're about to receive the items below into your life. There is no charge. There is no return policy, because you won't want one.</p>
+    <div id="acceptItems"></div>
+    <label>
+      <input type="checkbox" id="acceptCheck">
+      <span>I accept these things into my life, and I'll keep an eye out for them — they tend to arrive looking like something else.</span>
+    </label>
+  </div>
+
+  <div class="drawer-foot">
+    <div class="subtotal"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+    <div class="foot-note" id="footNote">Taxes: none. Shipping: cosmic, free.</div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>Checkout</button>
+  </div>
+</aside>
+
+<!-- ritual -->
+<div class="ritual" id="ritual" role="dialog" aria-label="Processing your order">
+  <div class="sky" id="sky"></div>
+  <div class="ritual-inner" id="ritualInner">
+    <div class="ritual-title">Placing your order…</div>
+    <div class="steps" id="steps"></div>
+  </div>
+  <div class="confirm" id="confirm">
+    <div class="confirm-card">
+      <div class="seal"><svg viewBox="0 0 32 32" width="52" height="52" aria-hidden="true"><circle cx="16" cy="18" r="13" fill="#E8641B"/><ellipse cx="11.5" cy="13.5" rx="4.5" ry="3.2" fill="#F49A5B" opacity=".7"/><path d="M17 7 C19.5 2.5 26 3.2 26 3.2 s-.6 6-6.5 6" fill="#3E6B45"/><rect x="15.2" y="3.6" width="1.9" height="4.6" rx=".95" fill="#6B4A2F"/></svg></div>
+      <h2>It is done.</h2>
+      <p>Order <span style="color:var(--gold)">Nº 000·∞</span> confirmed by all relevant parties.</p>
+      <div class="order-lines" id="orderLines"></div>
+      <p>Paid: nothing. Owed: nothing.<br>Delivery: when you least expect it.</p>
+      <button class="back" id="backBtn">Return to the store</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PRODUCTS = [
+  {id:'luck', name:'Luck', tint:'#F6E7C6', rating:'4.9', reviews:'2,847', desc:'General purpose. Works on parking spots, coin flips, and second chances.', note:'Bestseller'},
+  {id:'hope', name:'Hope', tint:'#DCEDDA', rating:'5.0', reviews:'9,120', desc:'Small but self-replenishing. Pairs well with mornings.', note:'Restocked daily'},
+  {id:'love', name:'Love', tint:'#F9DFD3', rating:'4.8', reviews:'14,203', desc:'Given and received in the same transaction. Handle warmly.', note:'Fragile · precious'},
+  {id:'patience', name:'Patience', tint:'#E9EBD9', rating:'4.6', reviews:'1,532', desc:'Ships slowly, on purpose. You\u2019ll understand when it arrives.', note:'Slow delivery'},
+  {id:'courage', name:'Courage', tint:'#F8DCBE', rating:'4.9', reviews:'3,481', desc:'Feels heavier in the cart than it does in your hands.', note:'One size fits all'},
+  {id:'peace', name:'Peace of Mind', tint:'#DCEBE4', rating:'4.7', reviews:'6,914', desc:'Quiet, lightweight, easy to lose and easy to reorder.', note:'Reorder anytime'},
+  {id:'timing', name:'Good Timing', tint:'#F3E4C4', rating:'4.8', reviews:'987', desc:'Arrives precisely when it should, which is rarely when you\u2019d like.', note:'Punctual, cosmically'},
+  {id:'fresh', name:'A Fresh Start', tint:'#E2EFD6', rating:'5.0', reviews:'4,096', desc:'Compatible with any day of the week, not just January 1st.', note:'No expiry'},
+  {id:'serendipity', name:'Serendipity', tint:'#FBE3CB', rating:'4.9', reviews:'2,222', desc:'Cannot be ordered for a specific purpose. That\u2019s the mechanism.', note:'Surprise inside'}
+];
+
+const RITUAL_STEPS = [
+  'Take a deep breath…',
+  'Talking to the universe…',
+  'Asking the angels nicely…',
+  'Conspiring with karma…',
+  'Aligning the relevant stars…',
+  'Filing paperwork with fate…',
+  'Whispering your name into the wind…',
+  'Confirming with your future self…'
+];
+
+let cart = {}; // id -> qty
+let mode = 'cart'; // 'cart' | 'accept'
+
+const $ = id => document.getElementById(id);
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ----- render grid ----- */
+$('grid').innerHTML = PRODUCTS.map(p => `
+  <div class="card">
+    <div class="swatch" style="background:${p.tint}">${p.name[0]}</div>
+    <h3>${p.name}</h3>
+    <div class="stars">★★★★★ <span>${p.rating} (${p.reviews})</span></div>
+    <p class="desc">${p.desc}</p>
+    <div class="meta"><span>${p.note}</span><span class="price">$0.00</span></div>
+    <button class="add-btn" data-id="${p.id}">Add to cart</button>
+  </div>`).join('');
+
+document.querySelectorAll('.add-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.id;
+    cart[id] = (cart[id]||0)+1;
+    btn.textContent = 'Added ✓';
+    btn.classList.add('added');
+    setTimeout(()=>{btn.textContent='Add to cart';btn.classList.remove('added')},900);
+    renderCart();
+  });
+});
+
+/* ----- cart drawer ----- */
+function cartQty(){return Object.values(cart).reduce((a,b)=>a+b,0)}
+function renderCart(){
+  $('cartCount').textContent = cartQty();
+  const items = Object.entries(cart);
+  $('emptyCart').style.display = items.length? 'none':'block';
+  $('cartItems').innerHTML = items.map(([id,qty])=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    return `<div class="cart-item">
+      <div class="thumb" style="background:${p.tint}">${p.name[0]}</div>
+      <div class="info"><strong>${p.name}</strong><small>$0.00 · always</small></div>
+      <div class="qty">
+        <button data-id="${id}" data-d="-1" aria-label="Less ${p.name}">−</button>
+        <span>${qty}</span>
+        <button data-id="${id}" data-d="1" aria-label="More ${p.name}">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.qty button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const id=b.dataset.id, d=+b.dataset.d;
+      cart[id]+=d;
+      if(cart[id]<=0) delete cart[id];
+      renderCart();
+    });
+  });
+  $('checkoutBtn').disabled = mode==='cart' ? items.length===0 : !$('acceptCheck').checked;
+}
+
+function openDrawer(){ $('overlay').classList.add('open'); $('drawer').classList.add('open'); }
+function closeDrawer(){ $('overlay').classList.remove('open'); $('drawer').classList.remove('open'); setMode('cart'); }
+$('openCart').addEventListener('click',()=>{renderCart();openDrawer()});
+$('closeCart').addEventListener('click',closeDrawer);
+$('overlay').addEventListener('click',closeDrawer);
+
+/* ----- checkout flow ----- */
+function setMode(m){
+  mode = m;
+  $('cartView').style.display   = m==='cart'  ? 'block':'none';
+  $('acceptView').style.display = m==='accept'? 'block':'none';
+  $('drawerTitle').textContent  = m==='cart' ? 'Your cart' : 'One last thing';
+  $('checkoutBtn').textContent  = m==='cart' ? 'Checkout' : 'Accept';
+  $('footNote').textContent     = m==='cart' ? 'Taxes: none. Shipping: cosmic, free.'
+                                             : 'By accepting, you agree to notice good things.';
+  if(m==='accept'){
+    $('acceptCheck').checked = false;
+    $('acceptItems').innerHTML = Object.entries(cart).map(([id,qty])=>{
+      const p = PRODUCTS.find(x=>x.id===id);
+      return `<div class="cart-item">
+        <div class="thumb" style="background:${p.tint}">${p.name[0]}</div>
+        <div class="info"><strong>${p.name}</strong><small>Qty ${qty} · incoming</small></div>
+      </div>`;
+    }).join('');
+  }
+  renderCart();
+}
+$('acceptCheck') && $('acceptCheck').addEventListener('change',renderCart);
+
+$('checkoutBtn').addEventListener('click',()=>{
+  if(mode==='cart'){ setMode('accept'); }
+  else if($('acceptCheck').checked){ startRitual(); }
+});
+
+/* ----- ritual ----- */
+function buildSky(){
+  const sky = $('sky');
+  sky.innerHTML='';
+  for(let i=0;i<90;i++){
+    const s=document.createElement('i');
+    s.style.left = Math.random()*100+'%';
+    s.style.top  = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    const sz = Math.random()<.15? 3:2;
+    s.style.width=s.style.height=sz+'px';
+    sky.appendChild(s);
+  }
+}
+
+function startRitual(){
+  closeDrawerSilently();
+  buildSky();
+  const stepsEl = $('steps');
+  stepsEl.innerHTML = RITUAL_STEPS.map(t=>`
+    <div class="step"><span class="mark"><span class="spin"></span></span><span>${t}</span></div>`).join('');
+  $('ritualInner').style.display='block';
+  $('confirm').classList.remove('show');
+  $('ritual').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  const steps=[...stepsEl.children];
+  const base = reduced? 250 : 950;
+  let t = 300;
+  steps.forEach((el,i)=>{
+    const isBreath = (i===0 && !reduced);
+    setTimeout(()=>{ el.classList.add('show'); }, t);
+    setTimeout(()=>{ el.classList.add('done'); el.querySelector('.mark').textContent='✓'; }, t + (isBreath? 2600 : base*0.8));
+    t += isBreath? 3000 : base;
+  });
+  setTimeout(showConfirm, t+1100);
+}
+
+function closeDrawerSilently(){
+  $('overlay').classList.remove('open');
+  $('drawer').classList.remove('open');
+}
+
+function showConfirm(){
+  $('orderLines').innerHTML = Object.entries(cart).map(([id,qty])=>{
+    const p=PRODUCTS.find(x=>x.id===id);
+    return `<div><span>${p.name}${qty>1? ' × '+qty:''}</span><span>now yours</span></div>`;
+  }).join('') + `<div><span>Delivered to</span><span>your life</span></div>`;
+  $('ritualInner').style.display='none';
+  $('confirm').classList.add('show');
+}
+
+$('backBtn').addEventListener('click',()=>{
+  $('ritual').classList.remove('open');
+  document.body.style.overflow='';
+  cart={};
+  setMode('cart');
+  renderCart();
+});
+
+renderCart();
+</script>
+</body>
+</html>
