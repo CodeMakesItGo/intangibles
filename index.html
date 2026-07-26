@@ -116,11 +116,12 @@ header{
 }
 .card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(34,48,31,.10)}
 .swatch{
-  border-radius:10px;height:8.5rem;display:flex;align-items:center;justify-content:center;
+  border-radius:10px;height:11rem;display:flex;align-items:center;justify-content:center;
   font-family:'Instrument Serif',serif;font-style:italic;font-size:4.2rem;color:var(--ink);
-  margin-bottom:.4rem;user-select:none;overflow:hidden;
+  margin-bottom:.4rem;user-select:none;overflow:hidden;background:var(--paper);
+  border:1px solid rgba(34,48,31,.08);
 }
-.swatch img{width:100%;height:100%;object-fit:cover;display:block}
+.swatch img{width:100%;height:100%;object-fit:contain;display:block;padding:.5rem}
 .card h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.35rem}
 .stars{color:var(--gold);font-size:.85rem;letter-spacing:.1em}
 .stars span{color:rgba(34,48,31,.5);letter-spacing:0;margin-left:.4rem;font-size:.78rem}
@@ -180,8 +181,9 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
   width:3rem;height:3rem;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;overflow:hidden;
   font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;
+  background:var(--paper);border:1px solid rgba(34,48,31,.08);
 }
-.cart-item .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cart-item .thumb img{width:100%;height:100%;object-fit:contain;display:block;padding:.15rem}
 .cart-item .info{flex:1}
 .cart-item .info strong{font-weight:500;font-size:.95rem;display:block}
 .cart-item .info small{color:var(--dusk);font-size:.75rem}
@@ -284,7 +286,7 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
 @media (max-width:520px){
   .grid{grid-template-columns:1fr 1fr;gap:.8rem}
   .card{padding:.9rem}
-  .swatch{height:6rem;font-size:3rem}
+  .swatch{height:8rem;font-size:3rem}
 }
 </style>
 </head>
@@ -387,7 +389,7 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
     <div class="confirm-card">
       <div class="seal"><svg viewBox="0 0 32 32" width="52" height="52" aria-hidden="true"><circle cx="16" cy="18" r="13" fill="#E8641B"/><ellipse cx="11.5" cy="13.5" rx="4.5" ry="3.2" fill="#F49A5B" opacity=".7"/><path d="M17 7 C19.5 2.5 26 3.2 26 3.2 s-.6 6-6.5 6" fill="#3E6B45"/><rect x="15.2" y="3.6" width="1.9" height="4.6" rx=".95" fill="#6B4A2F"/></svg></div>
       <h2>It is done.</h2>
-      <p>Order <span style="color:var(--gold)">Nº 000·∞</span> confirmed by all relevant parties.</p>
+      <p>Order <span style="color:var(--gold)" id="orderNum">Nº 000000</span> confirmed by all relevant parties.</p>
       <div class="order-lines" id="orderLines"></div>
       <p>Paid: nothing. Owed: nothing.<br>Delivery: when you least expect it.</p>
       <button class="back" id="backBtn">Return to the store</button>
@@ -397,15 +399,24 @@ footer .fine{max-width:30rem;margin:0 auto .6rem}
 
 <script>
 const PRODUCTS = [
-  {id:'luck', name:'Luck', tint:'#F6E7C6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174924_030eed5b-832b-411a-92fe-37ac69335970.png', rating:'4.9', reviews:'2,847', desc:'General purpose. Works on parking spots, coin flips, and second chances.', note:'Bestseller'},
-  {id:'hope', name:'Hope', tint:'#DCEDDA', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174926_5c189d0f-1359-4dcb-abff-6f3736ae7ada.png', rating:'5.0', reviews:'9,120', desc:'Small but self-replenishing. Pairs well with mornings.', note:'Restocked daily'},
-  {id:'love', name:'Love', tint:'#F9DFD3', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174928_621dedcc-9a45-4bb9-aac0-83cc44aaf7d5.png', rating:'4.8', reviews:'14,203', desc:'Given and received in the same transaction. Handle warmly.', note:'Fragile \u00b7 precious'},
-  {id:'patience', name:'Patience', tint:'#E9EBD9', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_175052_b2ebd497-ea64-4da6-b63e-96a611073051.png', rating:'4.6', reviews:'1,532', desc:'Ships slowly, on purpose. You\u2019ll understand when it arrives.', note:'Slow delivery'},
-  {id:'courage', name:'Courage', tint:'#F8DCBE', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174930_4046d313-e908-4419-8bd1-b9d38e1835f6.png', rating:'4.9', reviews:'3,481', desc:'Feels heavier in the cart than it does in your hands.', note:'One size fits all'},
-  {id:'peace', name:'Peace of Mind', tint:'#DCEBE4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174932_4eea45d2-7101-407c-9319-d7775678a312.png', rating:'4.7', reviews:'6,914', desc:'Quiet, lightweight, easy to lose and easy to reorder.', note:'Reorder anytime'},
-  {id:'timing', name:'Good Timing', tint:'#F3E4C4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_175101_562cc67e-3f46-45a1-b817-400f5a2d31c6.png', rating:'4.8', reviews:'987', desc:'Arrives precisely when it should, which is rarely when you\u2019d like.', note:'Punctual, cosmically'},
-  {id:'fresh', name:'A Fresh Start', tint:'#E2EFD6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174936_4af9de2a-087a-4038-bb30-a0f8b59ac9c4.png', rating:'5.0', reviews:'4,096', desc:'Compatible with any day of the week, not just January 1st.', note:'No expiry'},
-  {id:'serendipity', name:'Serendipity', tint:'#FBE3CB', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_174953_f6d5aad3-8143-45c7-b0fb-cb95ac4fe68b.png', rating:'4.9', reviews:'2,222', desc:'Cannot be ordered for a specific purpose. That\u2019s the mechanism.', note:'Surprise inside'}
+  {id:'luck', name:'Luck', tint:'#F6E7C6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182924_b918fdc1-4060-4bb9-a56a-54d1a3b0c800.png', rating:'4.9', reviews:'2,847', desc:'General purpose. Works on parking spots, coin flips, and second chances.', note:'Bestseller'},
+  {id:'hope', name:'Hope', tint:'#DCEDDA', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182927_f3c92893-f21b-4745-8dc8-7e4936e274fa.png', rating:'5.0', reviews:'9,120', desc:'Small but self-replenishing. Pairs well with mornings.', note:'Restocked daily'},
+  {id:'love', name:'Love', tint:'#F9DFD3', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182929_cd200121-8b45-4ff3-9f78-207c00586ed4.png', rating:'4.8', reviews:'14,203', desc:'Given and received in the same transaction. Handle warmly.', note:'Fragile \u00b7 precious'},
+  {id:'patience', name:'Patience', tint:'#E9EBD9', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182931_143296ef-10c5-4ac2-9841-109cd6a9023a.png', rating:'4.6', reviews:'1,532', desc:'Ships slowly, on purpose. You\u2019ll understand when it arrives.', note:'Slow delivery'},
+  {id:'courage', name:'Courage', tint:'#F8DCBE', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182933_99b6e3a1-b8d6-409a-8a65-3a6b06aa667b.png', rating:'4.9', reviews:'3,481', desc:'Feels heavier in the cart than it does in your hands.', note:'One size fits all'},
+  {id:'peace', name:'Peace of Mind', tint:'#DCEBE4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182936_4cbdbc9f-9988-4ce4-b69c-8479a7e262d6.png', rating:'4.7', reviews:'6,914', desc:'Quiet, lightweight, easy to lose and easy to reorder.', note:'Reorder anytime'},
+  {id:'timing', name:'Good Timing', tint:'#F3E4C4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182937_dd400cdb-7e44-46ec-9998-2a247b3b2598.png', rating:'4.8', reviews:'987', desc:'Arrives precisely when it should, which is rarely when you\u2019d like.', note:'Punctual, cosmically'},
+  {id:'fresh', name:'A Fresh Start', tint:'#E2EFD6', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_182939_b6eb652a-9eee-4b63-9c2a-6fab95b614a4.png', rating:'5.0', reviews:'4,096', desc:'Compatible with any day of the week, not just January 1st.', note:'No expiry'},
+  {id:'confidence', name:'Confidence', tint:'#F0DFC0', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_190608_12d20073-bc17-4aec-8a32-7f69a6aa9eb1.png', rating:'4.8', reviews:'5,204', desc:'Goes down easy. Wears off slower than you\u2019d expect.', note:'Take before big moments'},
+  {id:'motivation', name:'Motivation', tint:'#F7D4BA', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_190610_dd2f469e-2ea1-4bea-b30e-b04bd938e08a.png', rating:'4.5', reviews:'11,340', desc:'Best consumed before 10am. Effects vary wildly after that.', note:'Crashes by 3pm'},
+  {id:'acceptance', name:'Acceptance', tint:'#E4E8DE', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_191255_1dfef1dc-1a59-4ddc-8a79-d2e894591252.png', rating:'4.7', reviews:'8,441', desc:'Doesn’t fix anything. Somehow helps anyway.', note:'Non-negotiable, eventually'},
+  {id:'nostalgia', name:'Nostalgia', tint:'#EAD9C0', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_191257_de1a8c16-9503-47c2-871b-bc9452314251.png', rating:'4.6', reviews:'6,650', desc:'Smells like a house you don’t live in anymore.', note:'Hits hardest in autumn'},
+  {id:'closure', name:'Closure', tint:'#E6DED0', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_191259_32b9b107-6c7b-47e7-bc8b-b927c605a631.png', rating:'4.3', reviews:'3,090', desc:'Rarely arrives when asked for. Arrives anyway.', note:'No refunds, no re-openings'},
+  {id:'spirituality', name:'Spirituality', tint:'#E6DCEE', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_192119_a098cb69-3b06-4ebc-a46d-fc9d54e1865d.png', rating:'4.6', reviews:'7,733', desc:'Occasionally causes quitting your job to become a potter.', note:'Use sparingly at parties'},
+  {id:'abundance', name:'Abundance', tint:'#EFE2B8', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_192121_ebb8a4c3-c274-4f2a-9af4-32589443fabb.png', rating:'4.4', reviews:'9,982', desc:'More arrives than you asked for. That’s kind of the point.', note:'Storage not included'},
+  {id:'friendship', name:'Friendship', tint:'#F6D9C4', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_192124_1bcca107-4d0b-4871-88d5-81b7b3c3f081.png', rating:'4.9', reviews:'18,650', desc:'Low maintenance. High yield. Best kept in pairs.', note:'Two required per unit'},
+  {id:'wealth', name:'Wealth', tint:'#ECE0B0', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_192127_e2e2241b-e8e6-49f8-836f-ee69f50ba366.png', rating:'3.9', reviews:'22,104', desc:'Weighs more than expected. Disappears faster than expected.', note:'Insured, technically'},
+  {id:'clarity', name:'Clarity', tint:'#D9E8EA', img:'https://d8j0ntlcm91z4.cloudfront.net/user_3GGnTSwFvabSuuL4AiBADkup1nN/hf_20260725_192128_e00897ef-96c1-44a9-92d4-437191abba08.png', rating:'4.7', reviews:'4,215', desc:'Temporary. Reapply as needed, usually around 2am.', note:'Streak-free formula'}
 ];
 
 const RITUAL_STEPS = [
@@ -558,6 +569,8 @@ function showConfirm(){
     const p=PRODUCTS.find(x=>x.id===id);
     return `<div><span>${p.name}${qty>1? ' × '+qty:''}</span><span>now yours</span></div>`;
   }).join('') + `<div><span>Delivered to</span><span>your life</span></div>`;
+  const orderNum = String(Math.floor(100000 + Math.random()*900000));
+  $('orderNum').textContent = 'Nº ' + orderNum;
   $('ritualInner').style.display='none';
   $('confirm').classList.add('show');
 }
